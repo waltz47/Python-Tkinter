@@ -14,18 +14,19 @@ from PIL import ImageTk, Image
 import pymysql
 
 my_user_name = str(time.time())
-
 pnconfig = PNConfiguration()
 random_user_name = str(time.time())
-pnconfig.publish_key = 'pub-c-8b7d5926-b29a-4a03-a705-c64732d9e813'
-pnconfig.subscribe_key = 'sub-c-44020b4a-01b7-11eb-8930-9a105f766811'
+pnconfig.publish_key = 'pub-c-00a1ab6c-d126-445b-bc35-0867fadd7eca'
+pnconfig.subscribe_key = 'sub-c-a27b43da-19db-11eb-808e-cebd12fb04ab'
 pnconfig.uuid = myuuid = my_user_name #make sure you use a unique username
 pubnub = PubNub(pnconfig)
-channel_name = "chan-2"
+channel_name = "ggwpe"
 
-myfont = "consolas"
+myfont = "consolas" 
 db = pymysql.connect("sql12.freemysqlhosting.net","sql12372847","y4zF6YUnvr",database = "sql12372847")
 dbc = db.cursor()
+# dbc.execute("select * from userlist")
+# print(list())
 # dbc.execute("create table userlist(name varchar(30), username varchar(30), password int)")
 def get_message(msg, state): 
 	chats.config(state = NORMAL)
@@ -50,8 +51,7 @@ def my_publish_callback(pb, status):
 		pass #message successfully passed
 		# get_message("message couldnt be sent due to unknown reasons",0)
 	else:
-		pass #message sending failed
-		
+		pass #message sending failed	
 def here_now_callback(result, status):
 	if status.is_error():
 		return
@@ -60,7 +60,6 @@ def here_now_callback(result, status):
 		for occ in chD.occupants:
 			ret.append(str(occ.uuid))
 	active_users_update(ret)
-	
 	
 class MySubscribeCallback(SubscribeCallback):
 	def presence(self, pubnub, presence):
@@ -72,13 +71,12 @@ class MySubscribeCallback(SubscribeCallback):
 			update_users()
 			
 		elif status.category == PNStatusCategory.PNConnectedCategory:
-			pubnub.publish().channel(channel_name).message("joined the channel").pn_async(my_publish_callback)
+			# pubnub.publish().channel(channel_name).message("joined the channel").pn_async(my_publish_callback)
 			update_users()
 		elif status.category == PNStatusCategory.PNReconnectedCategory:
 			pass #connectivity regained
 		elif status.category == PNStatusCategory.PNDecyptionErrorCategory:
-			pass #message decryption error
-			
+			pass #message decryption error	
 	def message(self, pubnub, message):
 			if message.publisher != my_user_name:
 				get_message(message.publisher + ":" + message.message,1)
@@ -103,7 +101,6 @@ class Register(tkinter.Toplevel):
 		msg_sign.set("UserName")
 		self.e1 = tkinter.Entry(self, text = msg_sign)
 		self.e1.pack(padx = 20, ipadx = 20, pady = 5, ipady = 4)
-		# self.e1.focus()  #focus on it when the screen opens
 		self.e1.bind('<FocusIn>',lambda event=None:self.e1.delete("0","end"))
 		msg_sign_pwd = StringVar()
 		msg_sign_pwd.set("Password")
@@ -113,7 +110,7 @@ class Register(tkinter.Toplevel):
 		def pwdd(event = None):
 			self.e2.delete("0","end")
 			self.e2.config(show = "*")
-		btn2 = tkinter.Button(self, text = "Register", command = self.db_insert, relief = "solid")
+		btn2 = tkinter.Button(self, text = "Register", command = self.db_insert, relief = "solid", bg = "white")
 		btn2.pack(ipady = 6, ipadx = 10)
 		
 	def db_insert(self, event = None):
@@ -131,49 +128,40 @@ class Register(tkinter.Toplevel):
 			print(x)
 			l+=1
 		if l == 0:
-			print("looks good", len(list(result)))
+			# print("looks good", len(list(result)))
 			dbc.execute("insert into userlist values('{0}','{1}','{2}')".format(name,username,password))
 			db.commit()
 			self.withdraw()
 			self.rt.deiconify()
 		else:
 			tkinter.messagebox.showinfo(message = "User name already exists")
-		# print(list(dbc), list(result))
-		
 		
 class Login(tkinter.Toplevel):
 	def __init__(self, window):
 		super().__init__(window)
 		self.rt = window;
-		
 		self.title("Login")
 		self.geometry("300x200")
 		msg_sign = StringVar()
 		msg_sign.set("UserName")
 		self.e1 = tkinter.Entry(self, text = msg_sign)
 		self.e1.pack(padx = 20, ipadx = 20, pady = 5, ipady = 4)
-		# self.e1.focus()  #focus on it when the screen opens
 		self.e1.bind('<FocusIn>',lambda event=None:self.e1.delete("0","end"))
 		msg_sign_pwd = StringVar()
 		msg_sign_pwd.set("Password")
 		self.e2 = tkinter.Entry(self, text = msg_sign_pwd)
 		self.e2.pack(padx = 20, ipadx = 20, pady = 5, ipady = 4)
-		# self.e2.bind('<Return>',self.going)
 		self.e2.bind('<FocusIn>',lambda event=None:pwd())
 		def pwd():
 			self.e2.delete("0","end")
 			self.e2.config(show = "*")
-		
-		btn1 = tkinter.Button(self, text="Go", command = self.going, relief = "solid")
+		btn1 = tkinter.Button(self, text="Go", command = self.going, relief = "solid", bg = "white")
 		btn1.pack(pady = 5, ipady = 2, ipadx = 5)
-		
-		btn2 = tkinter.Button(self, text = "Register", command = self.reg, relief = "solid")
+		btn2 = tkinter.Button(self, text = "Register", command = self.reg, relief = "solid", bg = "white")
 		btn2.pack(ipady = 1, ipadx = 5)
-		
 	def reg(self, event = "None"):
 		self.withdraw()
-		reg = Register(self)
-		
+		reg = Register(self)	
 	def going(self,event="nothing"):
 		myname = self.e1.get()
 		password = self.e2.get()
@@ -218,22 +206,6 @@ def active_users_update(curr):
 def send_message(my_message):
 	get_message(my_message, 0)
 	env = pubnub.publish().channel(channel_name).message(my_message).sync()
-# def go_on(evt = None):
-	# sleep(2)
-	# root.destroy()
-# root = tkinter.Tk()
-# root.title("welcome screen")
-# root.geometry("900x600+{0}+{1}". format(
-	# int(0.2*root.winfo_screenwidth()), int(0.2*root.winfo_screenheight()) # a*b + c + d == a is height b is width and c is starting height and d is starting width (from left side of screen)
-# ))
-# img1 = Image.open("intro_image.png")
-# img1 = img1.resize((900,600),Image.ANTIALIAS)   #resize to the width and height of the root geometry
-# intro_img = ImageTk.PhotoImage(img1)
-# intro = tkinter.Label(root, image = intro_img)
-# intro.pack(expand = "true", fill = "both")
-# root.overrideredirect(True)  #remove the title bar of intro
-# root.after(300,go_on)
-# root.mainloop()
 window = tkinter.Tk()
 window.geometry("{0}x{1}". format (
 	int(0.6*window.winfo_screenwidth()), int(0.6*window.winfo_screenheight()) 
@@ -246,34 +218,24 @@ def color_pick(event = None):
 	col = askcolor()
 	chats.config(background = col[1])
 frame_left_active_users = tkinter.Frame(window,width = 200, bd = 2,background = "white", relief = GROOVE)   
-# frame_left_active_users.pack_propagate(0);
 frame_left_active_users.pack(side = "left", fill = "y", padx = 10,  pady = 10)
-
 frame_bottom_message_entry = tkinter.Frame(window, height = 130)                            
 frame_bottom_message_entry.pack_propagate(0);
 frame_bottom_message_entry.pack(side = "bottom", fill = "x")
-
-
 text_receiving_frame = tkinter.Frame(window, bg = "white", width = 600, height = 1000)
 text_receiving_frame.pack_propagate(0)
 text_receiving_frame.pack(fill = "both", padx = 10)
-
 chats_scroll = tkinter.Scrollbar(text_receiving_frame)
 chats_scroll.pack(side = "right", fill = "y")
-
 chat_label = tkinter.Label(text_receiving_frame, text = "Conversations", font = (myfont, 17),background = "white", borderwidth = 3, relief = "solid")
 chat_label.pack_propagate(0)
 chat_label.pack(expand = "true", fill = "y")
-chats = tkinter.Text(text_receiving_frame, font = (myfont,16),bg = "#ffcccc", fg = "white")
+chats = tkinter.Text(text_receiving_frame, font = (myfont,16),bg = "#312222", fg = "white")
 chats.pack(fill = "both", expand = "true", pady = 5, ipadx = 5)
 chats.bind("<Button-3>",color_pick)
 chats_scroll.config(command = chats.yview)
 chats.config(yscrollcommand = chats_scroll.set)
 chats.config(state = "disabled", cursor = "arrow")
-# for i in range(3):
-	# chats.config(state = NORMAL)
-	# chats.insert("end")
-
 def check_function(key = None):
 	my_message = message_entry.get()
 	ok = 0
@@ -293,7 +255,6 @@ def check_function(key = None):
 	message_entry.delete(0,'end') 
 def clear_sign(key):
 	message_entry.delete(0,'end')
-	
 msg_sign = StringVar()
 msg_sign.set("Enter your messages here")
 message_entry = tkinter.Entry(frame_bottom_message_entry, textvariable = msg_sign, font = (myfont, 15))
@@ -308,15 +269,11 @@ send.pack_propagate(0)
 send.pack(side = "right", ipadx = 15, ipady = 7)
 message_entry.pack_propagate(0)																												
 message_entry.pack(fill = "x",ipady = 8)
-# message_entry.focus()
-	
 label_in_frame_active_users = tkinter.Label(frame_left_active_users, text="Active", font = (myfont,17),borderwidth = 5, relief = "solid")
 label_in_frame_active_users.pack(side = "top", fill = "x")
-
 iimg = Image.open("bg_for_chats3.png")
 iimg = iimg.resize((1800,1000),Image.ANTIALIAS)
 img = ImageTk.PhotoImage(iimg)
-
 active_users = tkinter.Canvas(frame_left_active_users, scrollregion = (0,0,50,50))
 active_users.pack(expand = "true", fill = "both", side = "left", ipadx = 0)
 active_users.create_image(1,1,image = img,anchor = tkinter.NW)
@@ -324,13 +281,6 @@ active_scroll = tkinter.Scrollbar(frame_left_active_users, orient = VERTICAL)
 active_users.config(yscrollcommand = active_scroll.set)
 active_scroll.config(command = active_users.yview)
 active_scroll.pack(side = "right", fill = "y")
-# curr = ["param", "avv", "root", "sudoer", "hellzknight", "anon"]
-# active_users_update(curr)
-# check = []
-# for i in range(100):
-	# check.append("user anon person" + str(i))
-	# if i == 99:
-		# active_users_update(check)	
 def on_closing(evt = None):
 	pubnub.unsubscribe().channels(channel_name).execute() #unsub from channel
 	db.close()  #close connections from mysql
@@ -338,13 +288,3 @@ def on_closing(evt = None):
 	os._exit(0)
 window.protocol("WM_DELETE_WINDOW", on_closing)    
 window.mainloop()
-
-# make it better
-# modules:
-	# pubnub
-	# pillow
-	# pymysql
-	# font - fira mono
-	# tkcolorpicker
-	
-	
