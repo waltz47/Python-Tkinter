@@ -16,14 +16,14 @@ import pymysql
 my_user_name = str(time.time())
 pnconfig = PNConfiguration()
 random_user_name = str(time.time())
-pnconfig.publish_key = 'pub-c-00a1ab6c-d126-445b-bc35-0867fadd7eca'
-pnconfig.subscribe_key = 'sub-c-a27b43da-19db-11eb-808e-cebd12fb04ab'
+pnconfig.publish_key = #your publish key
+pnconfig.subscribe_key = #your sub key
 pnconfig.uuid = myuuid = my_user_name #make sure you use a unique username
 pubnub = PubNub(pnconfig)
 channel_name = "ggwpe"
 
 myfont = "consolas" 
-db = pymysql.connect("sql12.freemysqlhosting.net","sql12372847","y4zF6YUnvr",database = "sql12372847")
+db = pymysql.connect(#your sql login)
 dbc = db.cursor()
 # dbc.execute("select * from userlist")
 # print(list())
