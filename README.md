@@ -1,4 +1,4 @@
-#Python-Tkinter<br/>
+#Python-Tkinter
 Messenger GUI with tkinter and pubnub. (Text-only)<br/>
 Stuff you need:<br/>
 Modules: tkinter, pubnub, pillow/PIL, pymysql, tkcolorpicker <br/>
