@@ -1,5 +1,0 @@
-tkinter
-pubnub
-pillow/PIL
-pymysql
-tkcolorpicker
